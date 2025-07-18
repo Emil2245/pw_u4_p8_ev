@@ -3,6 +3,8 @@ import HomeView from "../views/HomeView.vue";
 import EstudianteView from "@/views/EstudianteView.vue";
 import LoginView from "@/views/LoginView.vue";
 
+import { obtenerPaginasPermitidas } from "@/helpers/Autorizacion";
+
 // function estaAutenticado(){
 //   //comprobacion de la flag auth
 //   return localStorage.getItem('auth')==='true';
@@ -20,11 +22,32 @@ const routes = [
       requiresAuth: true, //protegida
     },
   },
-  // {
-  //   path: "/estudiante",
-  //   name: "estudiante",
-  //   component: EstudianteView,
-  // },
+  {
+    path: "/estudiante",
+    name: "estudiante",
+    component: EstudianteView,
+    meta: {
+      requiresAuth: true, //protegida
+    },
+  },
+  {
+    path: "/about",
+    name: "about",
+    component: () => import("@/views/AboutView.vue"),
+  },
+  {
+    path: "/notas",
+    name: "notas",
+    component: () => import("@/views/NotasIngresoView.vue"),
+    meta: {
+      requiresAuth: true, //protegida
+    },
+  },
+  {
+    path: "/403",
+    name: "403",
+    component: () => import("@/views/RecursoProhibidoView.vue"),
+  },
 
   {
     path: "/login",
@@ -41,11 +64,19 @@ const router = createRouter({
 //GUARDIAN
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth) {
-    //en caso de no estar autenticado
+    //cuando esta autorizado
     if (!estaAutenticado()) {
+      //en caso de no estar autenticado
       next("/login");
     } else {
-      next();
+      //si esta autenticado
+      const usr = localStorage.getItem("usuario");
+      const paginas = obtenerPaginasPermitidas(usr);
+      if (paginas.includes(to.path)) {
+        next();
+      } else {
+        next("/403");
+      }
     }
   } else {
     next();
