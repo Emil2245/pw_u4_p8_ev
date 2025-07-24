@@ -13,6 +13,8 @@
 
       <label for="est-genero">Género</label>
       <input id="est-genero" type="text" v-model="estGenero" />
+      <input id="est-genero" type="text" v-model="estGenero" />
+      <input id="est-genero" type="text" v-model="estGenero" />
 
       <button @click="guardar()">Guardar</button>
     </div>
